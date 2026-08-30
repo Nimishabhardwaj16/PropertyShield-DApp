@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_34-8c7b05dbab55bcdf5df4aa7fd27d51b58ca67fee",
+  "solcVersion": "0.8.34",
+  "solcLongVersion": "0.8.34+commit.80d5c536",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.12.0"
+  },
+  "userSourceNameMap": {
+    "contracts/PropertyShield.sol": "project/contracts/PropertyShield.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "osaka",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/PropertyShield.sol": {
+        "content": "//SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.34;\r\ncontract PropertyShield {\r\nstruct Property {\r\n    uint256 propertyId;\r\n    address owner;\r\n    string location;\r\n    string propertyType;\r\n    uint256 registrationDate;\r\n    string metadataHash;\r\n    bool isForSale;\r\n    address requestedBuyer;\r\n}\r\nmapping(uint256 => Property) public properties;\r\nuint256 public propertyCount;\r\nfunction registerProperty(\r\n    string memory _location,\r\n    string memory _propertyType,\r\n    string memory _metadataHash\r\n) public {\r\npropertyCount++;\r\nproperties [propertyCount] = Property({\r\n    propertyId: propertyCount,\r\n    owner: msg.sender,\r\n    location: _location,\r\n    propertyType: _propertyType,\r\n    registrationDate: block.timestamp,\r\n    metadataHash: _metadataHash,\r\n    isForSale: false,\r\n    requestedBuyer: address(0)\r\n});\r\n}\r\nfunction listProperty(uint256 _propertyId)\r\npublic {  \r\n    require(properties[_propertyId].owner == msg.sender, \"You are not the owner\");\r\n    properties[_propertyId].isForSale = true;\r\n}\r\nfunction requestPurchase (uint256 _propertyId) public { \r\n    require(properties[_propertyId].isForSale, \"Property is not for sale\" );\r\n    require(properties[_propertyId].owner != msg.sender, \"Owner cannot buy own property\");\r\n    properties[_propertyId].requestedBuyer = msg.sender;\r\n}\r\nfunction transferOwnership(uint256 _propertyId)\r\npublic{\r\n    require(properties[_propertyId].owner == msg.sender, \"Only owner can transfer\");\r\n    require(properties [_propertyId].requestedBuyer != address(0), \"No buyer requested\");\r\n    properties[_propertyId].owner=properties[_propertyId].requestedBuyer; \r\n    properties[_propertyId].requestedBuyer=address(0); \r\n    properties[_propertyId].isForSale = false;\r\n    }\r\n}"
+      }
+    }
+  }
+}
